@@ -14,7 +14,7 @@ capabilities → work index → approach → point of view → contact.
 | Language   | TypeScript                                                 |
 | Styling    | Tailwind CSS v4, tokens declared in `app/globals.css`      |
 | Type       | Archivo (display/text), Instrument Serif (italic accent), JetBrains Mono (labels) — self-hosted via `next/font` |
-| Motion     | Hand-written CSS transitions + IntersectionObserver. No animation library. |
+| Motion     | GSAP 3 (ScrollTrigger, CustomEase) + Lenis smooth scroll, all tokenised in `lib/motion.ts` |
 | Imagery    | Hand-drawn inline SVG. No stock photography, no bitmaps.   |
 
 ## Running it
@@ -30,29 +30,28 @@ npx eslint .    # lint
 
 ```
 app/
-  layout.tsx            fonts, metadata, skip link
-  page.tsx              section composition + JSON-LD
-  globals.css           design tokens, type scale, utilities, keyframes
+  layout.tsx            fonts, metadata, skip link, no-JS fallback
+  page.tsx              reads content, passes it to each section, JSON-LD
+  globals.css           design tokens, type scale, utilities
   opengraph-image.tsx   generated social card
-  robots.ts sitemap.ts not-found.tsx
+  icon.tsx robots.ts sitemap.ts not-found.tsx
 components/
-  site-header.tsx       floating wordmark / nav / CTA, mobile panel
-  hero.tsx              opening statement, orientation strip, capability ticker
-  studio.tsx            positioning, and the four fields the studio spans
-  capabilities-list.tsx nine capabilities as an expanding index
-  work-index.tsx        the work browser (see below)
-  artwork.tsx           six conceptual SVG compositions
-  approach.tsx          the four-move process
-  point-of-view.tsx     inverted section — what the studio believes
-  contact.tsx           closing invitation and what happens next
-  site-footer.tsx
-  reveal.tsx            shared scroll-reveal primitive
-lib/content.ts          all copy and structured content
+  ui/                   primitives — Button, Statement, SectionLabel,
+                        SectionHead, Tag, Collapse, Marquee
+  sections/             one file per page section, props-only
+  layout/               SiteHeader, SiteFooter
+  motion/               Reveal, SmoothScroll
+  media/                artwork.tsx — six conceptual SVG compositions
+lib/
+  content.ts            all copy and structured content
+  motion.ts             every easing curve, duration and stagger
 ```
 
-All copy lives in `lib/content.ts`. Sections take their content from there and
-hold no strings of their own beyond section furniture, so the writing can be
-edited without touching layout.
+**Sections are props-only.** Nothing under `components/sections` imports
+`lib/content` for values — `app/page.tsx` reads it and passes each section its
+content, so the writing can be edited, restaged or moved to a CMS without
+touching layout. The same applies to motion: sections never invent an easing
+curve or a duration, they take them from `lib/motion.ts`.
 
 ## The work index
 
@@ -66,8 +65,13 @@ single media stage.
   list is complete on its own.
 - Below `lg`, the stage is dropped and the selected row renders its artwork
   inline — a tap target rather than a hover target.
-- The stage parallax is bounded to a few pixels, skipped on coarse pointers,
-  and disabled under `prefers-reduced-motion`.
+- Changing selection plays a directional wipe: the incoming artwork is
+  uncovered from the side the selection travelled, so the movement of the list
+  and the movement of the image agree.
+- The stage parallax uses `gsap.quickTo`, which retargets one live tween rather
+  than starting a new one per pointer event — that is what makes it feel
+  weighted instead of twitchy. Bounded to a few pixels, skipped on coarse
+  pointers, and disabled under `prefers-reduced-motion`.
 
 ## Content honesty
 
@@ -75,6 +79,23 @@ The site shows **conceptual applications, not case studies**. There are no
 invented clients, logos, testimonials, awards or performance figures anywhere
 in it, and the work section says so in plain language. Real client work should
 replace these entries only with permission.
+
+## Motion
+
+One system, declared in `lib/motion.ts`: three named `CustomEase` curves, four
+durations, three staggers. Nothing else in the codebase writes a raw easing
+string or duration.
+
+- **Smooth scroll** is Lenis, running on GSAP's ticker so scroll position and
+  ScrollTrigger never drift apart. Lenis rather than GSAP's own ScrollSmoother,
+  because ScrollSmoother transforms a wrapper element and that breaks
+  `position: sticky` — which the work index stage depends on.
+- **In-page links** are intercepted so the URL still updates. Header clearance
+  comes from each section's own `scroll-mt-28`, which Lenis honours and which
+  the browser uses when JS is unavailable — there is no second offset in JS to
+  keep in sync.
+- **Reduced motion** disables Lenis entirely, and every GSAP animation is
+  registered through `gsap.matchMedia()` so it is never created at all.
 
 ## Accessibility
 
@@ -85,6 +106,11 @@ replace these entries only with permission.
 - Scroll reveals are armed only by JS and only when motion is allowed. Without
   scripts, or with reduced motion, every section renders in its final state —
   and content the viewport skips past is released rather than left hidden.
+- Anything that receives focus is revealed immediately, so a keyboard user is
+  never moved to an element that is still transparent.
+- The hero ships its entrance state as inline styles so the final frame is
+  never painted first. A `<noscript>` rule and a reduced-motion rule each clear
+  that state, so the hero is never left hidden.
 - No information is conveyed by hover alone.
 
 ## Design system

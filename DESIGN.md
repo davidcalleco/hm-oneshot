@@ -67,16 +67,38 @@ point of view → paper contact → white footer.
 
 ## Motion
 
-One system, all hand-written.
+One system, declared in `lib/motion.ts` and used by everything. Sections do not
+invent curves or durations.
 
-- `hm-rise` — the hero's staggered entrance, 0.9s expo, ≤220ms of stagger.
-- `Reveal` — a shared IntersectionObserver that arms elements only after JS
-  loads. The un-animated page is the real page.
-- `hm-marquee` — the capability ticker; pauses on hover and focus.
-- Interaction transitions use `cubic-bezier(0.16, 1, 0.3, 1)` at 300–900ms.
+**Curves** (registered as GSAP `CustomEase`, mirroring the CSS variables):
+`hm-out` `0.16, 1, 0.3, 1` — the default, for anything entering.
+`hm-in-out` `0.83, 0, 0.17, 1` — for things that travel, like the stage wipe.
+`hm-soft` `0.33, 1, 0.68, 1` — for ambient corrections, like ticker velocity.
 
-`prefers-reduced-motion: reduce` disables all of it, including smooth scroll,
-and leaves every section in its final state.
+**Durations**: `fast` 0.32s, `base` 0.6s, `slow` 0.9s, `reveal` 1.05s,
+`stage` 1.15s. **Staggers**: `tight` 0.055s, `base` 0.085s, `loose` 0.12s.
+
+**Where motion is used**
+
+- *Hero* — a line-mask entrance: each headline line rises out of its own
+  overflow-hidden wrapper, staggered, with the rule drawing first.
+- *Reveal* — one shared scroll-triggered fade-and-rise, starting at `top 88%`.
+- *Work stage* — a directional clip-path wipe plus a damped `quickTo` parallax
+  and a slow scrub drift while the stage is pinned.
+- *Marquee* — a GSAP loop that takes its speed and direction from scroll
+  velocity, and pauses on hover and focus.
+- *Nav* — a pill that slides to the section you are reading.
+- *Collapse* — tweened height, so a mid-flight toggle is picked up rather than
+  snapping.
+
+**Rules**
+
+- Nothing essential is gated behind an animation. The un-animated page is the
+  real page.
+- `prefers-reduced-motion: reduce` disables all of it — Lenis does not start,
+  and GSAP animations are registered through `gsap.matchMedia()` so they are
+  never created.
+- Parallax stays under ~20px and never responds to a coarse pointer.
 
 ## Anti-patterns
 

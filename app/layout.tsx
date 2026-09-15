@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import "lenis/dist/lenis.css";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -71,6 +72,13 @@ export default function RootLayout({
       <body
         className={`${archivo.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} antialiased`}
       >
+        {/* The hero's entrance state is server-rendered as inline styles, so the
+            page never paints its final frame and then hide it. This puts that
+            state back for anyone browsing without JavaScript; the matching
+            reduced-motion rule lives in globals.css. */}
+        <noscript>
+          <style>{`[data-hero-line] > span{transform:none!important}[data-hero-fade]{opacity:1!important}`}</style>
+        </noscript>
         <a
           href="#main"
           className="type-label sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-ink focus:px-4 focus:py-3 focus:text-white"

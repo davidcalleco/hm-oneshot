@@ -1,14 +1,12 @@
-import { contact, tickerItems } from "@/lib/content";
+import type { footer as footerContent, site as siteContent } from "@/lib/content";
 
-const sections = [
-  { href: "#studio", label: "Studio" },
-  { href: "#capabilities", label: "Capabilities" },
-  { href: "#work", label: "Work" },
-  { href: "#approach", label: "Approach" },
-  { href: "#contact", label: "Contact" },
-];
-
-export function SiteFooter() {
+export function SiteFooter({
+  content,
+  site,
+}: {
+  content: typeof footerContent;
+  site: typeof siteContent;
+}) {
   return (
     <footer className="border-t border-line bg-white">
       <div className="shell py-14 md:py-20">
@@ -18,7 +16,7 @@ export function SiteFooter() {
           className="font-display w-full text-[clamp(3.25rem,15.5vw,14rem)] leading-[0.82] font-medium tracking-[-0.045em] text-ink"
           style={{ fontStretch: "92%" }}
         >
-          Hello Machine
+          {site.name}
           <span className="ml-[0.15em] inline-block size-[0.09em] translate-y-[-0.55em] rounded-full bg-signal align-baseline" />
         </p>
 
@@ -26,7 +24,7 @@ export function SiteFooter() {
           <div>
             <h2 className="type-label text-faint">Sections</h2>
             <ul className="mt-4 space-y-2">
-              {sections.map((item) => (
+              {content.sections.map((item) => (
                 <li key={item.href}>
                   <a href={item.href} className="type-body link-underline text-ink">
                     {item.label}
@@ -39,34 +37,31 @@ export function SiteFooter() {
           <div>
             <h2 className="type-label text-faint">Capabilities</h2>
             <ul className="type-body mt-4 space-y-1 text-[0.9375rem]">
-              {tickerItems.map((item) => (
+              {content.capabilities.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
           </div>
 
           <div className="md:col-span-2">
-            <h2 className="type-label text-faint">Start a conversation</h2>
+            <h2 className="type-label text-faint">{site.cta.label}</h2>
             <a
-              href={`mailto:${contact.email}`}
+              href={`mailto:${site.email}`}
               className="link-underline font-display mt-4 inline-block text-[clamp(1.125rem,2.2vw,1.65rem)] leading-tight font-medium tracking-[-0.025em] text-ink"
             >
-              {contact.email}
+              {site.email}
             </a>
             <p className="type-body mt-4 max-w-[34ch] text-[0.9375rem]">
-              {contact.studio}. We take on a small number of projects at a time
-              so the people you meet are the people who do the work.
+              {site.studio}. {content.note}
             </p>
           </div>
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="type-label text-faint">
-            © {new Date().getFullYear()} Hello Machine
+            © {new Date().getFullYear()} {site.name}
           </p>
-          <p className="type-label text-faint">
-            Design-led technology studio · Built with intent
-          </p>
+          <p className="type-label text-faint">{content.colophon}</p>
         </div>
       </div>
     </footer>

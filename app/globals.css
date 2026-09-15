@@ -31,6 +31,9 @@
   /* Semantic accent */
   --color-signal: #1d3bf0;
   --color-signal-deep: #1630c4;
+  /* Same roles, re-tuned for contrast on ink */
+  --color-signal-invert: #7e93ff;
+  --color-body-invert: #b4b6bb;
 
   /* Families */
   --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
@@ -56,7 +59,16 @@
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
-    scroll-padding-top: 6.5rem;
+    /* No scroll-padding here: each section carries its own `scroll-mt-28`,
+       and the two would stack — natively and under Lenis alike. That one
+       class is the single source of truth for header clearance. */
+  }
+
+  /* Lenis is driving. Native smooth scrolling would fight it — but it stays
+     as the no-JS fallback above. `.lenis` is present whenever Lenis is
+     running; `.lenis-smooth` is not, so match on the former. */
+  html.lenis {
+    scroll-behavior: auto;
   }
 
   body {
@@ -221,31 +233,10 @@
 
 /* ==========================================================================
    Motion
+
+   Scroll reveals, the hero entrance and the ticker are all driven by GSAP
+   (see lib/motion.ts). Only the ambient signal pulse lives in CSS.
    ========================================================================== */
-
-@keyframes hm-marquee {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-@keyframes hm-rise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 0.55em, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-.hm-rise {
-  animation: hm-rise 0.9s var(--ease-out-expo) backwards;
-}
 
 @keyframes hm-pulse {
   0%,
@@ -259,54 +250,22 @@
   }
 }
 
-.hm-marquee-track {
-  display: flex;
-  width: max-content;
-  animation: hm-marquee 46s linear infinite;
-}
-
-.hm-marquee:hover .hm-marquee-track,
-.hm-marquee:focus-within .hm-marquee-track {
-  animation-play-state: paused;
-}
-
 .hm-pulse {
   animation: hm-pulse 2.4s var(--ease-in-out-quint) infinite;
 }
 
-/* Scroll reveal — content is visible by default and only animates when JS
-   marks it, so the site is fully readable without scripts or with motion off. */
-[data-reveal] {
-  opacity: 1;
-}
-
-[data-reveal][data-reveal-armed="true"] {
-  opacity: 0;
-  transform: translate3d(0, 1.25rem, 0);
-  transition:
-    opacity 0.85s var(--ease-out-expo),
-    transform 0.85s var(--ease-out-expo);
-  transition-delay: var(--reveal-delay, 0ms);
-}
-
-[data-reveal][data-reveal-armed="true"][data-reveal-in="true"] {
-  opacity: 1;
-  transform: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .hm-rise {
-    animation: none;
-  }
-  .hm-marquee-track {
-    animation: none;
-    transform: none;
-  }
   .hm-pulse {
     animation: none;
   }
-  [data-reveal][data-reveal-armed="true"] {
-    opacity: 1;
-    transform: none;
+
+  /* The hero ships its entrance state as inline styles. GSAP never runs under
+     reduced motion, so the state is cleared here instead. */
+  [data-hero-line] > span {
+    transform: none !important;
+  }
+
+  [data-hero-fade] {
+    opacity: 1 !important;
   }
 }

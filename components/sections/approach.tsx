@@ -1,35 +1,28 @@
-import { Reveal } from "@/components/reveal";
-import { processSteps } from "@/lib/content";
+import type { approach as approachContent } from "@/lib/content";
+import { Reveal } from "@/components/motion/reveal";
+import { SectionHead } from "@/components/ui/section-head";
 
-export function Approach() {
+export function Approach({ content }: { content: typeof approachContent }) {
   return (
     <section
       id="approach"
       className="scroll-mt-28 border-t border-line bg-cream py-24 md:py-36"
     >
       <div className="shell">
-        <div className="grid-editorial gap-y-8 pb-16 md:pb-24">
-          <div className="col-span-12 md:col-span-4">
-            <Reveal>
-              <p className="type-label text-faint">
-                <span className="text-signal">04</span> &nbsp;/&nbsp; Approach
-              </p>
-            </Reveal>
-          </div>
-          <div className="col-span-12 md:col-span-8">
-            <Reveal as="h2" className="type-statement max-w-[20ch]">
-              Four moves. The first one is the reason the rest{" "}
-              <span className="type-serif text-signal">hold</span>.
-            </Reveal>
-          </div>
+        <div className="pb-16 md:pb-24">
+          <SectionHead
+            index={content.index}
+            label={content.label}
+            statement={content.statement}
+            statementClassName="max-w-[20ch]"
+          />
         </div>
 
         <ol>
-          {processSteps.map((step, i) => (
+          {content.steps.map((step) => (
             <Reveal
               as="li"
               key={step.index}
-              delay={Math.min(i * 60, 240)}
               className="grid-editorial gap-y-5 border-t border-line-strong py-10 md:py-14"
             >
               <div className="col-span-12 flex items-baseline gap-5 md:col-span-2 md:block">
@@ -45,8 +38,14 @@ export function Approach() {
                 <h3 className="type-heading max-w-[12ch]">{step.title}</h3>
                 <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
                   {step.markers.map((marker) => (
-                    <li key={marker} className="type-label flex items-center gap-2 text-body">
-                      <span aria-hidden="true" className="size-[5px] rounded-full bg-signal" />
+                    <li
+                      key={marker}
+                      className="type-label flex items-center gap-2 text-body"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="size-[5px] rounded-full bg-signal"
+                      />
                       {marker}
                     </li>
                   ))}
