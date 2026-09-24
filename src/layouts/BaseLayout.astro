@@ -63,9 +63,13 @@ const jsonLd = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <Font cssVariable="--font-archivo" preload />
+    {/* Deliberately not preloaded. `preload` is per-family, so it also fetches
+        the latin-ext subsets — ~97KB that unicode-range guarantees this
+        English copy will never use. Astro emits a metric-matched local
+        fallback per family, so the swap costs a glyph change, not a reflow. */}
+    <Font cssVariable="--font-archivo" />
     <Font cssVariable="--font-instrument-serif" />
-    <Font cssVariable="--font-jetbrains" preload />
+    <Font cssVariable="--font-jetbrains" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
