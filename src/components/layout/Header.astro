@@ -1,0 +1,100 @@
+---
+import type { site as siteContent } from "@/data/content";
+import Button from "@/components/ui/Button.astro";
+
+interface Props {
+  site: typeof siteContent;
+}
+
+const { site } = Astro.props;
+const nav = site.nav;
+const panelLinks = [...nav, { href: site.cta.href, label: "Contact" }];
+---
+
+<!-- Visual state is published as data-scrolled / data-open by the header
+     script and styled from the markup here. The two are mutually exclusive by
+     construction, so no rule ever has to out-specify another. -->
+<hm-header
+  data-scrolled="false"
+  data-open="false"
+  class="group fixed inset-x-0 top-0 z-50 block"
+>
+  <div class="shell flex items-center justify-between py-5 transition-[padding] duration-500 group-data-[scrolled=true]:py-3">
+    {/* Wordmark — a floating element in its own right, so it stays legible
+        over white, cream and the inverted sections alike. */}
+    <a
+      href="#top"
+      aria-label={`${site.name}, back to top`}
+      class="relative z-10 flex items-baseline gap-2 rounded-full border border-transparent px-4 py-2.5 text-ink no-underline transition-all duration-500 group-data-[scrolled=true]:border-line group-data-[scrolled=true]:bg-white/85 group-data-[scrolled=true]:backdrop-blur-md group-data-[open=true]:text-white"
+    >
+      <span class="font-display text-[1.0625rem] font-semibold tracking-[-0.03em]">{site.name}</span>
+      <span aria-hidden="true" class="hm-pulse mb-[0.15em] block size-[6px] rounded-full bg-signal"></span>
+    </a>
+
+    {/* Desktop nav — a single floating element, as compact as it can be */}
+    <nav
+      data-nav
+      aria-label="Primary"
+      class="relative hidden items-center gap-1 rounded-full border border-line bg-white/80 p-1 backdrop-blur-md transition-shadow duration-500 group-data-[scrolled=true]:shadow-[0_8px_30px_-12px_rgba(14,15,17,0.18)] lg:flex"
+    >
+      <span
+        data-nav-indicator
+        aria-hidden="true"
+        class="pointer-events-none absolute top-1 bottom-1 left-0 rounded-full bg-cream opacity-0"
+      ></span>
+      {
+        nav.map((item) => (
+          <a
+            data-nav-link
+            href={item.href}
+            class="type-label relative rounded-full px-4 py-2.5 text-body transition-colors duration-300 hover:text-ink aria-[current=true]:text-ink"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <Button
+        data-header-cta
+        href={site.cta.href}
+        variant="signal"
+        size="md"
+        class="max-sm:hidden"
+      >
+        {site.cta.label}
+      </Button>
+      <button
+        type="button"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        class="type-label relative z-10 rounded-full border px-4 py-3 transition-colors group-data-[open=false]:border-line group-data-[open=false]:bg-white/80 group-data-[open=false]:text-ink group-data-[open=false]:backdrop-blur-md group-data-[open=true]:border-white/30 group-data-[open=true]:text-white lg:hidden"
+      >
+        Menu
+      </button>
+    </div>
+  </div>
+
+  {/* Mobile panel */}
+  <div data-menu-panel id="mobile-nav" hidden class="fixed inset-0 bg-ink text-white lg:hidden">
+    <div class="shell flex h-full flex-col justify-between pt-28 pb-10">
+      <nav aria-label="Primary, mobile" class="flex flex-col">
+        {
+          panelLinks.map((item, i) => (
+            <a href={item.href} class="type-statement border-b border-line-invert py-5 text-white">
+              <span class="type-label mr-4 align-super text-faint-invert">0{i + 1}</span>
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+      <a href={`mailto:${site.email}`} class="type-label text-faint-invert">{site.email}</a>
+    </div>
+  </div>
+</hm-header>
+
+<script>
+  import "@/scripts/header";
+</script>

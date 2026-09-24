@@ -1,0 +1,91 @@
+---
+import type { capabilities as capabilitiesContent } from "@/data/content";
+import Reveal from "@/components/ui/Reveal.astro";
+import SectionLabel from "@/components/ui/SectionLabel.astro";
+
+interface Props {
+  content: typeof capabilitiesContent;
+}
+
+const { content } = Astro.props;
+const items = content.items;
+const defaultOpen = items[0].index;
+const preview = items[0];
+---
+
+<hm-capabilities
+  id="capabilities"
+  data-default-open={defaultOpen}
+  class="block scroll-mt-28 border-t border-line bg-white py-24 md:py-36"
+>
+  <div class="shell grid-editorial gap-y-12">
+    {/* Meta column — mirrors the hovered row without being the only source */}
+    <div class="col-span-12 md:col-span-4">
+      <div class="md:sticky md:top-32">
+        <Reveal>
+          <SectionLabel index={content.index} label={content.label} />
+          <h2 class="type-heading mt-6 max-w-[16ch]">{content.heading}</h2>
+          <p class="type-body mt-5 max-w-[34ch]">{content.blurb}</p>
+        </Reveal>
+
+        <div aria-hidden="true" class="mt-12 hidden border-t border-line pt-6 md:block">
+          <p data-preview-index class="type-label text-signal">{preview.index}</p>
+          <p data-preview-blurb class="type-body mt-3 max-w-[30ch] text-ink">{preview.blurb}</p>
+        </div>
+      </div>
+    </div>
+
+    {/* The list */}
+    <div class="col-span-12 md:col-span-7 md:col-start-6">
+      <ul data-capability-list class="border-t border-line">
+        {
+          items.map((capability) => {
+            const isOpen = capability.index === defaultOpen;
+            const panelId = `capability-${capability.index}`;
+            return (
+              <Reveal as="li" class="border-b border-line">
+                <h3>
+                  <button
+                    type="button"
+                    data-capability={capability.index}
+                    data-blurb={capability.blurb}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    class="group flex w-full items-baseline gap-5 py-6 text-left transition-colors duration-300 hover:text-signal md:gap-8"
+                  >
+                    <span class="type-label shrink-0 text-faint transition-colors duration-300 group-hover:text-signal">
+                      {capability.index}
+                    </span>
+                    <span class="type-heading flex-1">{capability.name}</span>
+                    <span
+                      aria-hidden="true"
+                      class="type-label shrink-0 text-faint transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-aria-[expanded=true]:rotate-45"
+                    >
+                      +
+                    </span>
+                  </button>
+                </h3>
+
+                <div
+                  id={panelId}
+                  class="block overflow-hidden"
+                  style={`height: ${isOpen ? "auto" : "0"}; opacity: ${isOpen ? "1" : "0"}`}
+                >
+                  <p class="type-body max-w-[52ch] pb-8 pl-[3.25rem] md:pl-[4rem]">
+                    {capability.detail}
+                  </p>
+                </div>
+              </Reveal>
+            );
+          })
+        }
+      </ul>
+
+      <p class="type-label mt-6 text-faint">{content.hint}</p>
+    </div>
+  </div>
+</hm-capabilities>
+
+<script>
+  import "@/scripts/capabilities";
+</script>

@@ -1,0 +1,95 @@
+---
+import type { hero as heroContent } from "@/data/content";
+import Button from "@/components/ui/Button.astro";
+import Marquee from "@/components/ui/Marquee.astro";
+
+interface Props {
+  content: typeof heroContent;
+}
+
+const { content } = Astro.props;
+
+/* Split each headline line around the emphasised word, so the serif italic
+   accent can sit inside the line without breaking the overflow mask. */
+const lines = content.lines.map((text) => {
+  const at = content.emphasis ? text.indexOf(content.emphasis) : -1;
+  return at >= 0
+    ? {
+        before: text.slice(0, at),
+        word: content.emphasis,
+        after: text.slice(at + content.emphasis.length),
+      }
+    : { before: text, word: "", after: "" };
+});
+
+const guides = [0, 1, 2, 3];
+---
+
+<section id="top" class="relative pt-32 md:pt-40">
+  {/* Column guides — a drafting-table detail borrowed from the way we work,
+      not decoration: they mark the grid the rest of the page is built on. */}
+  <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 bottom-16 hidden lg:block">
+    <div class="shell h-full">
+      <div class="flex h-full">
+        {guides.map((i) => <div class={`h-full flex-1 ${i < 3 ? "border-r border-line/60" : ""}`} />)}
+      </div>
+    </div>
+  </div>
+
+  <div class="shell relative">
+    <div class="flex items-center gap-4 pb-10 md:pb-14">
+      <span data-hero-rule aria-hidden="true" class="h-px w-10 origin-left bg-ink md:w-20" style="transform: scaleX(0)"></span>
+      <p data-hero-fade style="opacity: 0" class="type-label text-body">{content.kicker}</p>
+    </div>
+
+    {/* Each line masks its own overflow so the type rises out of the page */}
+    <!-- 20ch, not 19: the longest authored line measures 19.31ch in Archivo,
+         and the three line breaks in the copy are deliberate. -->
+    <h1 class="type-display max-w-[20ch]">
+      {
+        lines.map((line) => (
+          <span data-hero-line class="block overflow-hidden pb-[0.08em]">
+            <span class="block" style="transform: translateY(110%)">{line.before}{line.word ? <span class="type-serif text-signal">{line.word}</span> : null}{line.after}</span>
+          </span>
+        ))
+      }
+    </h1>
+
+    {/* Offset supporting column — asymmetric against the headline */}
+    <div class="grid-editorial mt-12 md:mt-20">
+      <div class="col-span-12 md:col-span-5 md:col-start-8">
+        <p data-hero-fade style="opacity: 0" class="type-lede">{content.lede}</p>
+        <div data-hero-fade style="opacity: 0" class="mt-8 flex flex-wrap items-center gap-3">
+          <Button href={content.actions.primary.href} variant="signal">{content.actions.primary.label}</Button>
+          <Button href={content.actions.secondary.href} variant="outline">{content.actions.secondary.label}</Button>
+        </div>
+      </div>
+    </div>
+
+    {/* Orientation strip */}
+    <dl class="grid-editorial mt-20 gap-y-8 border-t border-line pt-6 md:mt-28">
+      {
+        content.meta.map((item) => (
+          <div data-hero-fade style="opacity: 0" class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <dt class="type-label flex items-baseline gap-3 text-faint">
+              <span class="text-signal">{item.index}</span>
+              {item.label}
+            </dt>
+            <dd class="type-body mt-3 max-w-[28ch] text-ink">{item.value}</dd>
+          </div>
+        ))
+      }
+      <p data-hero-fade style="opacity: 0" class="type-label col-span-12 self-end text-faint lg:col-span-3 lg:text-right">
+        Scroll<span aria-hidden="true" class="ml-2">↓</span>
+      </p>
+    </dl>
+  </div>
+
+  <div class="mt-16 md:mt-24">
+    <Marquee items={content.ticker} />
+  </div>
+</section>
+
+<script>
+  import "@/scripts/hero";
+</script>

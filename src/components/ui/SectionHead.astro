@@ -1,0 +1,60 @@
+---
+import type { Emphasised } from "@/data/content";
+import Reveal from "./Reveal.astro";
+import SectionLabel from "./SectionLabel.astro";
+import Statement from "./Statement.astro";
+
+interface Props {
+  index: string;
+  label: string;
+  statement: Emphasised;
+  intro?: string;
+  size?: "statement" | "display";
+  invert?: boolean;
+  statementClass?: string;
+}
+
+const {
+  index,
+  label,
+  statement,
+  intro,
+  size = "statement",
+  invert = false,
+  statementClass = "max-w-[19ch]",
+} = Astro.props;
+---
+
+<!-- The opening of a section: mono label in the left columns, statement and
+     supporting text in the right. Every section uses this so the entry rhythm
+     stays identical down the page. -->
+<div class="grid-editorial gap-y-8">
+  <div class="col-span-12 md:col-span-4">
+    <Reveal>
+      <SectionLabel index={index} label={label} invert={invert} />
+    </Reveal>
+  </div>
+
+  <div class="col-span-12 md:col-span-8">
+    <Reveal>
+      <Statement
+        value={statement}
+        size={size}
+        accentClass={invert ? "text-signal-invert" : "text-signal"}
+        class={`${statementClass} ${invert ? "text-white" : ""}`}
+      />
+    </Reveal>
+
+    {
+      intro ? (
+        <Reveal delay={0.08}>
+          <p class={`type-body mt-6 max-w-[56ch] ${invert ? "text-body-invert" : ""}`}>
+            {intro}
+          </p>
+        </Reveal>
+      ) : null
+    }
+
+    <slot />
+  </div>
+</div>

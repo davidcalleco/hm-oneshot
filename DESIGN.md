@@ -12,7 +12,7 @@ warm statement, precise annotation — is the studio's name made visual.
 
 ## Colour
 
-Declared in `app/globals.css` under `@theme`.
+Declared in `src/styles/global.css` under `@theme`.
 
 | Token                 | Value     | Role                                        |
 | --------------------- | --------- | ------------------------------------------- |
@@ -37,7 +37,9 @@ Every text/background pair in the built page was measured against WCAG 2.2 AA
 
 ## Type
 
-Three families, each with one job.
+Three families, each with one job. All three are self-hosted from
+`src/assets/fonts` through Astro's fonts API — see the Fonts note in README.md
+for why they are committed rather than fetched.
 
 - **Archivo** (variable, `wdth` axis) — display and text. Statements run at
   `font-stretch: 94–96%` with `-0.03em` tracking and sub-1 line height.
@@ -49,6 +51,12 @@ Three families, each with one job.
 Scale utilities: `type-display`, `type-statement`, `type-heading`, `type-lede`,
 `type-body`, `type-label`, `type-serif`. All fluid via `clamp()`. Use the
 utility; do not set ad-hoc sizes.
+
+**`ch`-based measures are font-dependent.** Several headings cap their measure
+in `ch`, which resolves against the rendered font — so a font change moves every
+line break. The hero caps at `20ch` because its longest authored line measures
+19.31ch in Archivo and its three line breaks are deliberate. If the display face
+ever changes, re-measure that cap.
 
 ## Layout
 
@@ -67,8 +75,8 @@ point of view → paper contact → white footer.
 
 ## Motion
 
-One system, declared in `lib/motion.ts` and used by everything. Sections do not
-invent curves or durations.
+One system, declared in `src/lib/motion.ts` and used by everything. Sections do
+not invent curves or durations.
 
 **Curves** (registered as GSAP `CustomEase`, mirroring the CSS variables):
 `hm-out` `0.16, 1, 0.3, 1` — the default, for anything entering.
@@ -82,6 +90,9 @@ invent curves or durations.
 
 - *Hero* — a line-mask entrance: each headline line rises out of its own
   overflow-hidden wrapper, staggered, with the rule drawing first.
+- *Smooth scroll* — Lenis on its own rAF loop, with ScrollTrigger kept in step
+  through Lenis's scroll event. Not GSAP's ticker: Astro bundles each
+  component's script separately, and the coupling is not guaranteed to hold.
 - *Reveal* — one shared scroll-triggered fade-and-rise, starting at `top 88%`.
 - *Work stage* — a directional clip-path wipe plus a damped `quickTo` parallax
   and a slow scrub drift while the stage is pinned.
@@ -99,6 +110,9 @@ invent curves or durations.
   and GSAP animations are registered through `gsap.matchMedia()` so they are
   never created.
 - Parallax stays under ~20px and never responds to a coarse pointer.
+- GSAP's ticker sleeps while the document is hidden, so animations started on a
+  background tab resume rather than run. Never gate content on an animation
+  having completed.
 
 ## Anti-patterns
 

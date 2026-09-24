@@ -1,0 +1,62 @@
+---
+import type { footer as footerContent, site as siteContent } from "@/data/content";
+
+interface Props {
+  content: typeof footerContent;
+  site: typeof siteContent;
+}
+
+const { content, site } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line bg-white">
+  <div class="shell py-14 md:py-20">
+    {/* Oversized wordmark — the last thing on the page, held quietly */}
+    <p
+      aria-hidden="true"
+      class="font-display w-full text-[clamp(3.25rem,15.5vw,14rem)] leading-[0.82] font-medium tracking-[-0.045em] text-ink"
+      style="font-stretch: 92%"
+    >
+      {site.name}<span class="ml-[0.15em] inline-block size-[0.09em] translate-y-[-0.55em] rounded-full bg-signal align-baseline"></span>
+    </p>
+
+    <div class="mt-14 grid gap-x-8 gap-y-10 border-t border-line pt-10 md:grid-cols-4">
+      <div>
+        <h2 class="type-label text-faint">Sections</h2>
+        <ul class="mt-4 space-y-2">
+          {
+            content.sections.map((item) => (
+              <li>
+                <a href={item.href} class="type-body link-underline text-ink">{item.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="type-label text-faint">Capabilities</h2>
+        <ul class="type-body mt-4 space-y-1 text-[0.9375rem]">
+          {content.capabilities.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+
+      <div class="md:col-span-2">
+        <h2 class="type-label text-faint">{site.cta.label}</h2>
+        <a
+          href={`mailto:${site.email}`}
+          class="link-underline font-display mt-4 inline-block text-[clamp(1.125rem,2.2vw,1.65rem)] leading-tight font-medium tracking-[-0.025em] text-ink"
+        >
+          {site.email}
+        </a>
+        <p class="type-body mt-4 max-w-[34ch] text-[0.9375rem]">{site.studio}. {content.note}</p>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+      <p class="type-label text-faint">© {year} {site.name}</p>
+      <p class="type-label text-faint">{content.colophon}</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,27 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import Hero from "@/components/sections/Hero.astro";
+import Studio from "@/components/sections/Studio.astro";
+import Capabilities from "@/components/sections/Capabilities.astro";
+import WorkIndex from "@/components/sections/WorkIndex.astro";
+import Approach from "@/components/sections/Approach.astro";
+import PointOfView from "@/components/sections/PointOfView.astro";
+import Contact from "@/components/sections/Contact.astro";
+import * as content from "@/data/content";
+---
+
+<BaseLayout title="Hello Machine — Design-led technology studio" bareTitle>
+  <Header site={content.site} />
+  <main id="main">
+    <Hero content={content.hero} />
+    <Studio content={content.studio} />
+    <Capabilities content={content.capabilities} />
+    <WorkIndex content={content.work} />
+    <Approach content={content.approach} />
+    <PointOfView content={content.pointOfView} />
+    <Contact content={content.contact} site={content.site} />
+  </main>
+  <Footer content={content.footer} site={content.site} />
+</BaseLayout>

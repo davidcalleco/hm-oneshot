@@ -1,0 +1,62 @@
+---
+import type { contact as contactContent, site as siteContent } from "@/data/content";
+import Button from "@/components/ui/Button.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import SectionHead from "@/components/ui/SectionHead.astro";
+
+interface Props {
+  content: typeof contactContent;
+  site: typeof siteContent;
+}
+
+const { content, site } = Astro.props;
+const mailto = `mailto:${site.email}`;
+const mailtoSubject = `${mailto}?subject=Starting%20a%20conversation%20with%20Hello%20Machine`;
+---
+
+<section id="contact" class="scroll-mt-28 border-t border-line py-24 md:py-36">
+  <div class="shell">
+    <SectionHead
+      index={content.index}
+      label={content.label}
+      statement={content.statement}
+      size="display"
+      statementClass="max-w-[13ch]"
+    >
+      <Reveal delay={0.08}>
+        <p class="type-lede mt-8 max-w-[46ch]">{content.lede}</p>
+      </Reveal>
+
+      <Reveal delay={0.14} class="mt-10">
+        <a
+          href={mailto}
+          class="link-underline font-display inline-block text-[clamp(1.35rem,3.6vw,2.6rem)] leading-none font-medium tracking-[-0.03em] text-signal"
+        >
+          {site.email}
+        </a>
+      </Reveal>
+
+      <Reveal delay={0.2} class="mt-10 flex flex-wrap items-center gap-3">
+        <Button href={mailtoSubject} variant="ink">{site.cta.label}</Button>
+        <span class="type-label text-faint">{site.studio}</span>
+      </Reveal>
+    </SectionHead>
+
+    <Reveal class="mt-20 border-t border-line pt-10 md:mt-28">
+      <p class="type-label pb-8 text-faint">{content.nextHeading}</p>
+      <ol class="grid gap-x-8 gap-y-10 md:grid-cols-3">
+        {
+          content.next.map((item) => (
+            <li>
+              <p class="type-label text-signal">{item.index}</p>
+              <h3 class="type-heading mt-4 max-w-[16ch] text-[1.25rem] md:text-[1.4rem]">
+                {item.label}
+              </h3>
+              <p class="type-body mt-3 max-w-[34ch] text-[0.9375rem]">{item.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </Reveal>
+  </div>
+</section>

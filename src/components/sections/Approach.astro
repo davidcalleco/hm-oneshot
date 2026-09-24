@@ -1,0 +1,58 @@
+---
+import type { approach as approachContent } from "@/data/content";
+import Reveal from "@/components/ui/Reveal.astro";
+import SectionHead from "@/components/ui/SectionHead.astro";
+
+interface Props {
+  content: typeof approachContent;
+}
+
+const { content } = Astro.props;
+---
+
+<section id="approach" class="scroll-mt-28 border-t border-line bg-cream py-24 md:py-36">
+  <div class="shell">
+    <div class="pb-16 md:pb-24">
+      <SectionHead
+        index={content.index}
+        label={content.label}
+        statement={content.statement}
+        statementClass="max-w-[20ch]"
+      />
+    </div>
+
+    <ol>
+      {
+        content.steps.map((step) => (
+          <Reveal as="li" class="grid-editorial gap-y-5 border-t border-line-strong py-10 md:py-14">
+            <div class="col-span-12 flex items-baseline gap-5 md:col-span-2 md:block">
+              <span
+                aria-hidden="true"
+                class="font-display block text-[clamp(2.75rem,5vw,4.5rem)] leading-[0.85] font-medium tracking-[-0.04em] text-numeral"
+              >
+                {step.index}
+              </span>
+            </div>
+
+            <div class="col-span-12 md:col-span-4">
+              <h3 class="type-heading max-w-[12ch]">{step.title}</h3>
+              <ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+                {step.markers.map((marker) => (
+                  <li class="type-label flex items-center gap-2 text-body">
+                    <span aria-hidden="true" class="size-[5px] rounded-full bg-signal" />
+                    {marker}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+              <p class="type-lede max-w-[38ch] text-ink">{step.lead}</p>
+              <p class="type-body mt-4 max-w-[52ch]">{step.body}</p>
+            </div>
+          </Reveal>
+        ))
+      }
+    </ol>
+  </div>
+</section>
