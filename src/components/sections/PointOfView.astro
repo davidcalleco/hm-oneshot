@@ -1,0 +1,50 @@
+---
+import type { pointOfView as pointOfViewContent } from "@/data/content";
+import Reveal from "@/components/ui/Reveal.astro";
+import SectionHead from "@/components/ui/SectionHead.astro";
+import Statement from "@/components/ui/Statement.astro";
+
+interface Props {
+  content: typeof pointOfViewContent;
+}
+
+const { content } = Astro.props;
+---
+
+<section class="bg-ink py-24 text-white md:py-36">
+  <div class="shell">
+    <SectionHead
+      index={content.index}
+      label={content.label}
+      statement={content.statement}
+      intro={content.intro}
+      invert
+    />
+
+    <div class="mt-20 grid gap-px border-t border-line-invert md:mt-28 md:grid-cols-2">
+      {
+        content.beliefs.map((belief, i) => (
+          <Reveal
+            delay={i % 2 === 1 ? 0.08 : 0}
+            class="border-b border-line-invert py-10 md:odd:border-r md:odd:pr-12 md:even:pl-12"
+          >
+            <p class="type-label text-signal-invert">0{i + 1}</p>
+            <h3 class="type-heading mt-5 max-w-[22ch] text-white">{belief.claim}</h3>
+            <p class="type-body mt-4 max-w-[46ch] text-body-invert">{belief.instead}</p>
+          </Reveal>
+        ))
+      }
+    </div>
+
+    <Reveal class="mt-20 md:mt-28">
+      <blockquote class="grid-editorial">
+        <Statement
+          as="p"
+          value={content.quote}
+          accentClass="text-signal-invert"
+          class="col-span-12 max-w-[24ch] text-white md:col-span-9 md:col-start-4"
+        />
+      </blockquote>
+    </Reveal>
+  </div>
+</section>

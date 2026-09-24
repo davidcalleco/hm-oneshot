@@ -1,0 +1,146 @@
+---
+import type { work as workContent } from "@/data/content";
+import Artwork from "@/components/media/Artwork.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import SectionHead from "@/components/ui/SectionHead.astro";
+import Tag from "@/components/ui/Tag.astro";
+
+interface Props {
+  content: typeof workContent;
+}
+
+const { content } = Astro.props;
+const projects = content.projects;
+const first = projects[0];
+const total = String(projects.length).padStart(2, "0");
+---
+
+<hm-work-index id="work" class="block scroll-mt-28 border-t border-line py-24 md:py-36">
+  <div class="shell">
+    <div class="pb-14 md:pb-20">
+      <SectionHead
+        index={content.index}
+        label={content.label}
+        statement={content.statement}
+        intro={content.intro}
+        statementClass="max-w-[18ch]"
+      />
+    </div>
+
+    <div class="grid-editorial gap-y-10">
+      {/* Stage — decorative; every fact also lives in the list */}
+      <div class="col-span-12 hidden lg:col-span-5 lg:block">
+        <div class="sticky top-28">
+          <div class="relative aspect-4/5 w-full overflow-hidden border border-line bg-cream">
+            <div data-stage-parallax class="absolute inset-[-16px]">
+              {
+                projects.map((project, i) => (
+                  <div
+                    data-stage-layer
+                    aria-hidden="true"
+                    class={`absolute inset-0 ${i === 0 ? "opacity-100" : "opacity-0"}`}
+                  >
+                    <Artwork id={project.artwork} tone={project.tone} />
+                  </div>
+                ))
+              }
+            </div>
+            <span aria-hidden="true" class="pointer-events-none absolute inset-0 z-20 border border-white/10"></span>
+          </div>
+
+          {/* Stage meta */}
+          <div
+            data-stage-meta
+            aria-hidden="true"
+            class="mt-4 flex items-baseline justify-between border-t border-line pt-4"
+          >
+            <p class="type-label text-ink">
+              <span data-stage-index class="text-signal">{first.index}</span><span class="text-faint"> / {total}</span>
+            </p>
+            <p data-stage-disciplines class="type-label max-w-[22ch] text-right text-faint">
+              {first.disciplines.join(" · ")}
+            </p>
+          </div>
+
+          <div aria-hidden="true" class="mt-4 flex gap-1">
+            {
+              projects.map((_, i) => (
+                <span
+                  data-stage-tick
+                  data-active={String(i === 0)}
+                  class="h-px flex-1 origin-left bg-line-strong transition-colors duration-500 data-[active=true]:bg-signal"
+                />
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      {/* The index */}
+      <ol class="col-span-12 border-t border-line lg:col-span-6 lg:col-start-7">
+        {
+          projects.map((project, i) => {
+            const isActive = i === 0;
+            return (
+              <Reveal as="li" class="border-b border-line">
+                <button
+                  type="button"
+                  data-project={project.id}
+                  data-index={project.index}
+                  data-disciplines={project.disciplines.join(" · ")}
+                  aria-current={isActive ? "true" : undefined}
+                  class="group block w-full cursor-pointer py-7 text-left md:py-9"
+                >
+                  <span class="flex items-baseline gap-5 md:gap-7">
+                    <span class="type-label shrink-0 text-faint transition-colors duration-500 group-aria-[current=true]:text-signal">
+                      {project.index}
+                    </span>
+                    <span class="type-heading block flex-1 opacity-100 transition-[transform,opacity] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:opacity-45 lg:group-aria-[current=true]:translate-x-2 lg:group-aria-[current=true]:opacity-100">
+                      {project.title}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      class="type-label shrink-0 -translate-x-2 text-signal opacity-0 transition-all duration-500 group-aria-[current=true]:translate-x-0 group-aria-[current=true]:opacity-100"
+                    >
+                      →
+                    </span>
+                  </span>
+
+                  {/* Premise is always visible: the list reads on its own */}
+                  <span class="type-body mt-3 block max-w-[46ch] pl-10 text-[0.9375rem] md:pl-[3.25rem]">
+                    {project.premise}
+                  </span>
+
+                  <span
+                    data-project-detail
+                    class="block overflow-hidden"
+                    style={`height: ${isActive ? "auto" : "0"}; opacity: ${isActive ? "1" : "0"}`}
+                  >
+                    <span class="block pt-5 pl-10 md:pl-[3.25rem]">
+                      {/* Inline artwork for touch and narrow screens */}
+                      <span class="mb-5 block aspect-16/10 w-full overflow-hidden border border-line lg:hidden">
+                        <Artwork id={project.artwork} tone={project.tone} />
+                      </span>
+                      <span class="type-body block max-w-[52ch]">{project.summary}</span>
+                      <span class="mt-5 flex flex-wrap gap-2">
+                        {project.disciplines.map((discipline) => <Tag>{discipline}</Tag>)}
+                      </span>
+                    </span>
+                  </span>
+                </button>
+              </Reveal>
+            );
+          })
+        }
+      </ol>
+    </div>
+
+    <Reveal class="mt-10">
+      <p class="type-label max-w-[60ch] text-faint">{content.note}</p>
+    </Reveal>
+  </div>
+</hm-work-index>
+
+<script>
+  import "@/scripts/work-index";
+</script>

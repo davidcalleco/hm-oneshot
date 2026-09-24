@@ -1,0 +1,15 @@
+---
+interface Props {
+  index: string;
+  label: string;
+  invert?: boolean;
+  class?: string;
+}
+
+const { index, label, invert = false, class: className = "" } = Astro.props;
+---
+
+<!-- The mono index label that opens every section: `01 / Studio`. -->
+<p class={`type-label ${invert ? "text-faint-invert" : "text-faint"} ${className}`}>
+  <span class={invert ? "text-signal-invert" : "text-signal"}>{index}</span>&nbsp;/&nbsp;{label}
+</p>

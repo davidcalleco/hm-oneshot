@@ -1,0 +1,17 @@
+---
+import type { HTMLTag, Polymorphic } from "astro/types";
+
+type Props<Tag extends HTMLTag> = Polymorphic<{
+  as: Tag;
+  /** Seconds. */
+  delay?: number;
+}>;
+
+const { as: Tag = "div", delay = 0, ...rest } = Astro.props;
+---
+
+<!-- Renders visible. src/scripts/reveal.ts arms the hidden state only when
+     JS runs and motion is allowed, so the page is complete without either. -->
+<Tag {...rest} data-reveal data-reveal-delay={delay || undefined}>
+  <slot />
+</Tag>

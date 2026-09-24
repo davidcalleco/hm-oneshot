@@ -1,0 +1,106 @@
+---
+import { Font } from "astro:assets";
+import { capabilities, site as siteContent } from "@/data/content";
+import "@/styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Long-form pages set this to keep the default title untemplated. */
+  bareTitle?: boolean;
+}
+
+const DEFAULT_DESCRIPTION =
+  "Hello Machine is a design-led technology studio. We build the systems ambitious companies run on — websites, internal tools, automation and AI, made to be used rather than demoed.";
+
+const {
+  title,
+  description = DEFAULT_DESCRIPTION,
+  bareTitle = false,
+} = Astro.props;
+
+const pageTitle = bareTitle ? title : `${title} — ${siteContent.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL("/og.png", Astro.site).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: siteContent.name,
+  description:
+    "A design-led technology studio building websites, internal tools, automation and AI systems for ambitious businesses.",
+  email: siteContent.email,
+  url: Astro.site?.href,
+  areaServed: "Worldwide",
+  knowsAbout: capabilities.items.map((capability) => capability.name),
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#faf9f6" />
+    <meta name="color-scheme" content="light" />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteContent.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {/* Deliberately not preloaded. `preload` is per-family, so it also fetches
+        the latin-ext subsets — ~97KB that unicode-range guarantees this
+        English copy will never use. Astro emits a metric-matched local
+        fallback per family, so the swap costs a glyph change, not a reflow. */}
+    <Font cssVariable="--font-archivo" />
+    <Font cssVariable="--font-instrument-serif" />
+    <Font cssVariable="--font-jetbrains" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+
+  <body class="antialiased">
+    {/* The hero's entrance state is server-rendered as inline styles, so the
+        page never paints its final frame and then hides it. This puts that
+        state back for anyone browsing without JavaScript; the matching
+        reduced-motion rule lives in global.css. */}
+    <noscript>
+      <style>
+        [data-hero-line] > span { transform: none !important; }
+        [data-hero-fade] { opacity: 1 !important; }
+      </style>
+    </noscript>
+
+    <a
+      href="#main"
+      class="type-label sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-ink focus:px-4 focus:py-3 focus:text-white"
+    >
+      Skip to content
+    </a>
+
+    <slot />
+
+    <script>
+      import { initSmoothScroll } from "@/scripts/smooth-scroll";
+      import { initReveal } from "@/scripts/reveal";
+
+      initSmoothScroll();
+      initReveal();
+    </script>
+  </body>
+</html>

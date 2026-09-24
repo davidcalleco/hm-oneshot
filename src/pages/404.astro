@@ -1,0 +1,25 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Statement from "@/components/ui/Statement.astro";
+import SectionLabel from "@/components/ui/SectionLabel.astro";
+import Button from "@/components/ui/Button.astro";
+---
+
+<BaseLayout title="Page not found">
+  <main class="flex min-h-dvh items-center">
+    <div class="shell">
+      <SectionLabel index="404" label="Not found" />
+      <Statement
+        as="h1"
+        size="display"
+        value={{ text: "This page does not exist.", emphasis: "exist" }}
+        class="mt-8 max-w-[14ch]"
+      />
+      <p class="type-lede mt-8 max-w-[44ch]">
+        The link is broken or the page has moved. Everything Hello Machine
+        publishes lives on the homepage.
+      </p>
+      <Button href="/" variant="ink" class="mt-10">Back to the studio</Button>
+    </div>
+  </main>
+</BaseLayout>

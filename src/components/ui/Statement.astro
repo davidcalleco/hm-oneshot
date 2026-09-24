@@ -1,0 +1,29 @@
+---
+import type { HTMLTag, Polymorphic } from "astro/types";
+import type { Emphasised } from "@/data/content";
+
+type Props<Tag extends HTMLTag> = Polymorphic<{
+  as: Tag;
+  value: Emphasised;
+  size?: "statement" | "display" | "heading";
+  accentClass?: string;
+}>;
+
+const {
+  as: Tag = "h2",
+  value,
+  size = "statement",
+  accentClass = "text-signal",
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+/* One word of a statement is set in the serif italic accent — one word, never
+   a whole clause, is the rule the design system sets. */
+const at = value.emphasis ? value.text.indexOf(value.emphasis) : -1;
+const before = at >= 0 ? value.text.slice(0, at) : value.text;
+const word = at >= 0 ? value.emphasis! : "";
+const after = at >= 0 ? value.text.slice(at + word.length) : "";
+---
+
+<Tag {...rest} class={`type-${size} ${className}`}>{before}{word ? <span class={`type-serif ${accentClass}`}>{word}</span> : null}{after}</Tag>
