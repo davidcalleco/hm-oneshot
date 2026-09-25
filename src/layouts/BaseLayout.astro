@@ -72,6 +72,25 @@ const jsonLd = {
     <Font cssVariable="--font-jetbrains" />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    {/* Failsafe for the hero's entrance state.
+        That state is inline CSS which only the motion bundle clears, so if the
+        bundle 404s or times out the whole first viewport would stay invisible
+        for good. `is:inline` keeps this out of the bundle on purpose — it has
+        to survive exactly the failure it guards against. hero.ts stamps
+        data-hero="live" the moment it runs, including under reduced motion,
+        so the normal path is a no-op and a slow bundle is not pre-empted. */}
+    <script is:inline>
+      setTimeout(function () {
+        if (document.documentElement.dataset.hero === "live") return;
+        var lines = document.querySelectorAll("[data-hero-line] > span");
+        for (var i = 0; i < lines.length; i++) lines[i].style.transform = "none";
+        var fades = document.querySelectorAll("[data-hero-fade]");
+        for (var j = 0; j < fades.length; j++) fades[j].style.opacity = "1";
+        var rule = document.querySelector("[data-hero-rule]");
+        if (rule) rule.style.transform = "none";
+      }, 4000);
+    </script>
   </head>
 
   <body class="antialiased">

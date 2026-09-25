@@ -16,6 +16,11 @@ import {
  * clear that state, so the hero can never be left hidden.
  */
 export function initHero(): void {
+  // Tells the failsafe in BaseLayout that the bundle arrived and owns the
+  // entrance from here. Set before any motion work, and set even under
+  // reduced motion, where the stylesheet clears the state instead.
+  document.documentElement.dataset.hero = "live";
+
   registerMotion();
 
   const mm = gsap.matchMedia();
