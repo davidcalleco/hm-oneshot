@@ -1,7 +1,7 @@
 ---
 interface Props {
   href?: string;
-  variant?: "signal" | "ink" | "outline" | "outline-invert";
+  variant?: "signal" | "ink" | "outline";
   size?: "md" | "lg";
   class?: string;
   [key: string]: unknown;
@@ -20,8 +20,6 @@ const variants: Record<string, string> = {
   ink: "bg-ink text-white hover:bg-signal",
   outline:
     "border border-line-strong text-ink hover:border-ink hover:bg-ink hover:text-white",
-  "outline-invert":
-    "border border-line-invert text-white hover:border-white hover:bg-white hover:text-ink",
 };
 
 const sizes: Record<string, string> = { md: "px-5 py-3", lg: "px-6 py-4" };

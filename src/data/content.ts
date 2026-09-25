@@ -37,7 +37,7 @@ export const site = {
   cta: { href: "#contact", label: "Start a conversation" },
 };
 
-export const capabilityNames = [
+const capabilityNames = [
   "Digital strategy",
   "Websites",
   "AI systems",
@@ -122,7 +122,7 @@ export const studio = {
 /* Capabilities                                                               */
 /* -------------------------------------------------------------------------- */
 
-export type Capability = {
+type Capability = {
   index: string;
   name: string;
   blurb: string;
@@ -208,7 +208,7 @@ export const capabilities = {
 /* Work                                                                       */
 /* -------------------------------------------------------------------------- */
 
-export type Project = {
+type Project = {
   id: string;
   index: string;
   title: string;
@@ -308,7 +308,7 @@ export const work = {
 /* Approach                                                                   */
 /* -------------------------------------------------------------------------- */
 
-export type ProcessStep = {
+type ProcessStep = {
   index: string;
   title: string;
   lead: string;

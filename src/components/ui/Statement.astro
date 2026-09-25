@@ -20,10 +20,19 @@ const {
 
 /* One word of a statement is set in the serif italic accent — one word, never
    a whole clause, is the rule the design system sets. */
+/* Mapped rather than interpolated as `type-${size}`: Tailwind scans source
+   text for literal class names, so a constructed name is invisible to it and
+   would only survive while some other file happened to use the same literal. */
+const sizeClass = {
+  statement: "type-statement",
+  display: "type-display",
+  heading: "type-heading",
+}[size];
+
 const at = value.emphasis ? value.text.indexOf(value.emphasis) : -1;
 const before = at >= 0 ? value.text.slice(0, at) : value.text;
 const word = at >= 0 ? value.emphasis! : "";
 const after = at >= 0 ? value.text.slice(at + word.length) : "";
 ---
 
-<Tag {...rest} class={`type-${size} ${className}`}>{before}{word ? <span class={`type-serif ${accentClass}`}>{word}</span> : null}{after}</Tag>
+<Tag {...rest} class={`${sizeClass} ${className}`}>{before}{word ? <span class={`type-serif ${accentClass}`}>{word}</span> : null}{after}</Tag>

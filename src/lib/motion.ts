@@ -43,7 +43,6 @@ export const duration = {
 export const stagger = {
   tight: 0.055,
   base: 0.085,
-  loose: 0.12,
 } as const;
 
 /** Where a scroll-triggered reveal begins, in ScrollTrigger syntax. */
