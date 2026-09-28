@@ -1,0 +1,53 @@
+---
+import type { Offer } from "@/data";
+import Reveal from "@/components/ui/Reveal.astro";
+
+interface Props {
+  offers: readonly Offer[];
+  /** Adds the best-fit line. Used where the three are being compared. */
+  detailed?: boolean;
+}
+
+const { offers, detailed = false } = Astro.props;
+---
+
+<ol class="border-t border-line">
+  {
+    offers.map((offer, i) => (
+      <Reveal as="li" delay={Math.min(i * 0.06, 0.2)} class="border-b border-line">
+        <a
+          href={`/ways-to-work/${offer.id}`}
+          class="group grid-editorial gap-y-4 py-10 no-underline md:py-14"
+        >
+          <div class="col-span-12 md:col-span-3">
+            <span class="type-label text-signal">{offer.index}</span>
+            <h3 class="type-statement mt-3 transition-colors duration-500 group-hover:text-signal">
+              {offer.name}
+            </h3>
+          </div>
+
+          <div class="col-span-12 md:col-span-8 md:col-start-5">
+            <p class="type-lede max-w-[44ch] text-ink">{offer.promise}</p>
+            {
+              detailed ? (
+                <p class="type-body mt-5 max-w-[56ch]">
+                  <span class="type-label mr-2 text-faint">Best fit</span>
+                  {offer.bestFit}
+                </p>
+              ) : null
+            }
+            <span class="type-label mt-6 inline-flex items-center gap-2 text-signal">
+              Read how it works
+              <span
+                aria-hidden="true"
+                class="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1"
+              >
+                →
+              </span>
+            </span>
+          </div>
+        </a>
+      </Reveal>
+    ))
+  }
+</ol>

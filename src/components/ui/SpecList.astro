@@ -1,0 +1,38 @@
+---
+import Reveal from "./Reveal.astro";
+
+interface Props {
+  items: { label: string; body?: string; list?: readonly string[] }[];
+  class?: string;
+}
+
+const { items, class: className = "" } = Astro.props;
+---
+
+<!-- A spec sheet, not a feature grid: mono label left, plain answer right,
+     hairline between. Every offer answers the same questions in the same
+     order so they can be compared honestly. -->
+<dl class={`border-t border-line ${className}`}>
+  {
+    items.map((item, i) => (
+      <Reveal delay={Math.min(i * 0.05, 0.2)} class="grid-editorial gap-y-3 border-b border-line py-8 md:py-10">
+        <dt class="type-label col-span-12 text-faint md:col-span-3">{item.label}</dt>
+        <dd class="col-span-12 md:col-span-8 md:col-start-5">
+          {item.body ? <p class="type-body max-w-[58ch]">{item.body}</p> : null}
+          {
+            item.list ? (
+              <ul class="space-y-3">
+                {item.list.map((entry) => (
+                  <li class="type-body flex max-w-[58ch] gap-3">
+                    <span aria-hidden="true" class="mt-[0.6em] size-[5px] shrink-0 rounded-full bg-signal" />
+                    <span>{entry}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null
+          }
+        </dd>
+      </Reveal>
+    ))
+  }
+</dl>

@@ -1,0 +1,78 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CTABand from "@/components/ui/CTABand.astro";
+import SpecList from "@/components/ui/SpecList.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import Button from "@/components/ui/Button.astro";
+import * as content from "@/data";
+
+export function getStaticPaths() {
+  return content.offers.map((offer) => ({
+    params: { offer: offer.id },
+    props: { offer },
+  }));
+}
+
+const { offer } = Astro.props;
+
+const spec = [
+  { label: "Best fit", body: offer.bestFit },
+  { label: "Typical situations", list: offer.typicalSituations },
+  { label: "What we do", list: offer.whatWeDo },
+  { label: "What you get", list: offer.whatYouGet },
+  { label: "How it begins", body: offer.howItBegins },
+  { label: "What happens after", body: offer.afterwards },
+  { label: "Not this if", body: offer.notThisIf },
+];
+
+const others = content.offers.filter((o) => o.id !== offer.id);
+---
+
+<BaseLayout
+  title={offer.name}
+  description={`${offer.promise} ${offer.summary}`.slice(0, 155).trim()}
+>
+  <Header site={content.site} />
+  <main id="main">
+    <PageHero
+      index={offer.index}
+      label={`Ways to work · ${offer.name}`}
+      statement={{ text: offer.promise }}
+      intro={offer.summary}
+      statementClass="max-w-[17ch]"
+    />
+
+    <section class="pb-24 md:pb-32">
+      <div class="shell">
+        <SpecList items={spec} />
+
+        <Reveal class="mt-12 flex flex-wrap items-center gap-3">
+          <Button href={content.site.cta.href} variant="signal">
+            Start with {offer.name.toLowerCase()}
+          </Button>
+          <span class="type-label text-faint">or compare the other two</span>
+        </Reveal>
+
+        <Reveal class="mt-10 grid gap-4 border-t border-line pt-8 sm:grid-cols-2">
+          {
+            others.map((other) => (
+              <a href={`/ways-to-work/${other.id}`} class="group block">
+                <span class="type-label text-signal">{other.index}</span>
+                <span class="type-heading mt-2 block transition-colors duration-500 group-hover:text-signal">
+                  {other.name}
+                </span>
+                <span class="type-body mt-2 block max-w-[38ch] text-[0.9375rem]">{other.promise}</span>
+              </a>
+            ))
+          }
+        </Reveal>
+      </div>
+    </section>
+
+    <CTABand site={content.site} />
+  </main>
+  <Footer content={content.footer} site={content.site} />
+</BaseLayout>

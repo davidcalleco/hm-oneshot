@@ -3,11 +3,27 @@
 The website for Hello Machine — a design-led technology studio working across
 strategy, digital design, websites, automation and AI.
 
-A single, editorially paced page: opening statement → studio positioning →
-capabilities → work index → approach → point of view → contact.
+A multi-page site built around the commercial question a visitor is actually
+asking: is this relevant to me, what can I hire them for, and what happens
+next.
 
 This is also the reference implementation of the studio's Astro standard. New
 client sites should start from the patterns here.
+
+## Routes
+
+| Route | Job |
+| ----- | --- |
+| `/` | Hero, then situations → ways to work → what we make → positioning → work → fit → contact |
+| `/situations` | Six recognisable client situations, with cost and response |
+| `/ways-to-work` | The three engagement modes, compared |
+| `/ways-to-work/{intervention,ownership,continuous}` | One page each, answering the same seven questions in the same order |
+| `/capabilities` | What we make, the four disciplines, the nine capabilities, the work index |
+| `/approach` | `#process` (four moves) and `#principles` (point of view) |
+| `/contact` | The qualification flow |
+
+Process and principles share one route deliberately: separately they are two
+thin pages, and a visitor asking "what will this be like" wants both.
 
 ## Stack
 
@@ -60,8 +76,8 @@ src/
 ```
 
 **Sections are props-only.** Nothing under `src/components/sections` imports
-`src/data/content` for values — `index.astro` reads it and passes each section
-its content, so the writing can be edited, restaged or moved to a CMS (or to
+content for values — each page reads `@/data` and passes each section its
+content, so the writing can be edited, restaged or moved to a CMS (or to
 Webflow-authored content) without touching layout. The same discipline applies
 to motion: sections never invent an easing curve or a duration, they take them
 from `src/lib/motion.ts`.
@@ -74,7 +90,8 @@ renders the markup:
 
 | Element            | Behaviour                                                |
 | ------------------ | -------------------------------------------------------- |
-| `<hm-header>`      | condensed state, mobile panel, section tracking pill      |
+| `<hm-header>`      | condensed state, mobile panel, active-route pill           |
+| `<hm-contact-form>`| composes a structured mailto from the qualification form   |
 | `<hm-marquee>`     | ticker driven by scroll velocity and direction            |
 | `<hm-capabilities>`| expanding index with a pointer-following meta column      |
 | `<hm-work-index>`  | the work browser (below)                                  |
@@ -104,6 +121,23 @@ single media stage.
 - The stage parallax uses `gsap.quickTo`, which retargets one live tween rather
   than starting a new one per pointer event. Bounded to a few pixels, skipped
   on coarse pointers, disabled under reduced motion.
+
+## Identity
+
+One variable, `site.domain` in `src/data/site.ts`, feeds navigation, footer,
+contact, metadata, canonical URLs and social cards.
+
+The site previously asserted two identities: contact lived at
+`hellomachine.studio` while canonical URLs, `og:url`, the sitemap and JSON-LD
+declared `hm-2026.vercel.app` as the brand's home. The domain is registered
+and its Google Workspace mail records are live, so the address is real — the
+site simply is not hosted there yet.
+
+`astro.config.mjs` therefore defaults `site` to the brand domain, while
+preview deployments self-reference via `VERCEL_URL` and are marked
+`noindex` with a `Disallow: /` robots file. A proposal never claims to be the
+production site, and pointing the domain at a deployment stays a deliberate
+act.
 
 ## Fonts
 

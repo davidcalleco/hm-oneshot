@@ -1,0 +1,40 @@
+---
+import type { site as siteContent } from "@/data";
+import Button from "./Button.astro";
+import Reveal from "./Reveal.astro";
+import Statement from "./Statement.astro";
+
+interface Props {
+  site: typeof siteContent;
+  heading?: string;
+  emphasis?: string;
+  body?: string;
+}
+
+const {
+  site,
+  heading = "Tell us what is not working yet.",
+  emphasis = "yet",
+  body = "The best first message is the messy one. If you are not sure which kind of engagement you need, say that — working it out is part of the first conversation.",
+} = Astro.props;
+---
+
+<!-- The closing invitation, shared by every page so the next step is never
+     more than one screen away. -->
+<section class="border-t border-line bg-cream py-20 md:py-28">
+  <div class="shell grid-editorial gap-y-8">
+    <div class="col-span-12 md:col-span-7">
+      <Reveal>
+        <Statement value={{ text: heading, emphasis }} size="statement" class="max-w-[15ch]" />
+      </Reveal>
+      <Reveal delay={0.08}>
+        <p class="type-body mt-6 max-w-[48ch]">{body}</p>
+      </Reveal>
+    </div>
+
+    <Reveal delay={0.14} class="col-span-12 flex flex-col items-start gap-4 md:col-span-4 md:col-start-9 md:items-end">
+      <Button href={site.cta.href} variant="ink">{site.cta.label}</Button>
+      <a href={`mailto:${site.email}`} class="type-label link-underline text-body">{site.email}</a>
+    </Reveal>
+  </div>
+</section>

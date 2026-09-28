@@ -1,0 +1,49 @@
+---
+import type { Emphasised } from "@/data";
+import Reveal from "./Reveal.astro";
+import SectionLabel from "./SectionLabel.astro";
+import Statement from "./Statement.astro";
+
+interface Props {
+  index: string;
+  label: string;
+  statement: Emphasised;
+  intro?: string;
+  size?: "statement" | "display";
+  statementClass?: string;
+}
+
+const {
+  index,
+  label,
+  statement,
+  intro,
+  size = "display",
+  statementClass = "max-w-[16ch]",
+} = Astro.props;
+---
+
+<!-- The opening of an inner page. Deliberately the same furniture as a
+     homepage section head, one size up, so a page reads as a continuation of
+     the homepage rather than a different template. -->
+<section class="relative pt-32 pb-14 md:pt-40 md:pb-20">
+  <div class="shell">
+    <Reveal>
+      <SectionLabel index={index} label={label} />
+    </Reveal>
+
+    <Reveal>
+      <Statement as="h1" value={statement} size={size} class={`mt-8 ${statementClass}`} />
+    </Reveal>
+
+    {
+      intro ? (
+        <div class="grid-editorial mt-10 md:mt-14">
+          <Reveal delay={0.08} class="col-span-12 md:col-span-6 md:col-start-7">
+            <p class="type-lede">{intro}</p>
+          </Reveal>
+        </div>
+      ) : null
+    }
+  </div>
+</section>

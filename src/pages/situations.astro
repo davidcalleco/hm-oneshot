@@ -1,0 +1,47 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CTABand from "@/components/ui/CTABand.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import Statement from "@/components/ui/Statement.astro";
+import SituationIndex from "@/components/sections/SituationIndex.astro";
+import * as content from "@/data";
+
+const modeLabels = Object.fromEntries(
+  content.offers.map((offer) => [
+    offer.id,
+    { name: offer.name, href: `/ways-to-work/${offer.id}` },
+  ]),
+);
+---
+
+<BaseLayout
+  title="Situations we solve"
+  description="Six situations Hello Machine is usually called into — from a website that no longer reflects the business to an operation that rests on one person."
+>
+  <Header site={content.site} />
+  <main id="main">
+    <PageHero
+      index={content.situationsPage.index}
+      label={content.situationsPage.label}
+      statement={content.situationsPage.statement}
+      intro={content.situationsPage.intro}
+      statementClass="max-w-[15ch]"
+    />
+
+    <section class="pb-24 md:pb-32">
+      <div class="shell">
+        <SituationIndex situations={content.situations} detailed modeLabels={modeLabels} />
+
+        <Reveal class="mt-16">
+          <Statement value={content.situationsPage.outro} class="max-w-[22ch]" />
+        </Reveal>
+      </div>
+    </section>
+
+    <CTABand site={content.site} />
+  </main>
+  <Footer content={content.footer} site={content.site} />
+</BaseLayout>

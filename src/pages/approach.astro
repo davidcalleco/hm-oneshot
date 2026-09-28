@@ -1,0 +1,37 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CTABand from "@/components/ui/CTABand.astro";
+import Approach from "@/components/sections/Approach.astro";
+import PointOfView from "@/components/sections/PointOfView.astro";
+import * as content from "@/data";
+---
+
+<BaseLayout
+  title="Approach"
+  description="How Hello Machine works — find the signal, shape the system, make it useful, keep it honest — and the point of view behind it."
+>
+  <Header site={content.site} />
+  <main id="main">
+    <PageHero
+      index={content.approachPage.index}
+      label={content.approachPage.label}
+      statement={content.approachPage.statement}
+      intro={content.approachPage.intro}
+      statementClass="max-w-[18ch]"
+    />
+
+    <div id="process" class="scroll-mt-28">
+      <Approach content={content.approach} />
+    </div>
+
+    <div id="principles" class="scroll-mt-28">
+      <PointOfView content={content.pointOfView} />
+    </div>
+
+    <CTABand site={content.site} />
+  </main>
+  <Footer content={content.footer} site={content.site} />
+</BaseLayout>

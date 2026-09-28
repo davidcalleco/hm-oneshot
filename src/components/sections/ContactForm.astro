@@ -1,0 +1,86 @@
+---
+import type { qualification as qualificationContent, site as siteContent } from "@/data";
+import Button from "@/components/ui/Button.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+
+interface Props {
+  content: typeof qualificationContent;
+  site: typeof siteContent;
+}
+
+const { content, site } = Astro.props;
+---
+
+<hm-contact-form data-email={site.email} class="block">
+  <Reveal>
+    <h2 class="type-heading max-w-[24ch]">{content.heading}</h2>
+    <p class="type-body mt-4 max-w-[52ch]">{content.note}</p>
+  </Reveal>
+
+  {/* Shown until the script runs, so there is never a dead form on screen. */}
+  <p data-form-fallback class="type-body mt-8 max-w-[52ch]">
+    Email <a href={`mailto:${site.email}`} class="link-underline text-signal">{site.email}</a> with
+    whatever detail you have — the prompts below are only a guide.
+  </p>
+
+  <form hidden class="mt-12">
+    <fieldset class="border-t border-line pt-8">
+      <legend class="type-label float-left w-full pb-6 text-faint">
+        {content.intent.label}
+      </legend>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        {
+          content.intent.options.map((option) => (
+            <label class="group relative flex cursor-pointer flex-col rounded-2xl border border-line p-5 transition-colors duration-300 hover:border-line-strong has-[:checked]:border-signal has-[:checked]:bg-white has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-signal">
+              <input
+                type="radio"
+                name={content.intent.name}
+                value={option.value}
+                data-label={option.label}
+                class="sr-only"
+              />
+              <span class="type-label text-ink">{option.label}</span>
+              <span class="type-body mt-2 text-[0.9375rem]">{option.hint}</span>
+              <span
+                aria-hidden="true"
+                class="absolute top-5 right-5 size-[10px] rounded-full border border-line-strong transition-colors duration-300 group-has-[:checked]:border-signal group-has-[:checked]:bg-signal"
+              />
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="mt-10 border-t border-line">
+      {
+        content.fields.map((field) => (
+          <p class="grid-editorial gap-y-3 border-b border-line py-8">
+            <label for={`f-${field.name}`} class="col-span-12 md:col-span-4">
+              <span class="type-label block text-ink">{field.label}</span>
+              <span class="type-body mt-2 block max-w-[28ch] text-[0.875rem] text-faint">
+                {field.hint}
+              </span>
+            </label>
+            <textarea
+              id={`f-${field.name}`}
+              name={field.name}
+              data-label={field.label}
+              rows={field.rows}
+              class="type-body col-span-12 w-full resize-y rounded-xl border border-line bg-white px-4 py-3 text-ink transition-colors duration-300 placeholder:text-faint focus-visible:border-signal md:col-span-7 md:col-start-6"
+            />
+          </p>
+        ))
+      }
+    </div>
+
+    <div class="mt-10 flex flex-wrap items-center gap-4">
+      <Button variant="ink">{content.submit}</Button>
+      <span class="type-label max-w-[44ch] text-faint">{content.fallback}</span>
+    </div>
+  </form>
+</hm-contact-form>
+
+<script>
+  import "@/scripts/contact-form";
+</script>

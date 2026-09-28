@@ -1,0 +1,66 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import ContactForm from "@/components/sections/ContactForm.astro";
+import * as content from "@/data";
+---
+
+<BaseLayout
+  title="Start a conversation"
+  description="Tell us what is not working. A structured first message so the opening conversation starts somewhere useful."
+>
+  <Header site={content.site} />
+  <main id="main">
+    <PageHero
+      index={content.contactPage.index}
+      label={content.contactPage.label}
+      statement={content.contactPage.statement}
+      intro={content.contactPage.intro}
+      statementClass="max-w-[13ch]"
+    />
+
+    <section class="pb-24 md:pb-32">
+      <div class="shell grid-editorial gap-y-14">
+        <div class="col-span-12 lg:col-span-7">
+          <ContactForm content={content.qualification} site={content.site} />
+        </div>
+
+        <aside class="col-span-12 lg:col-span-4 lg:col-start-9">
+          <div class="lg:sticky lg:top-32">
+            <Reveal>
+              <h2 class="type-label text-faint">{content.contact.nextHeading}</h2>
+              <ol class="mt-6 border-t border-line">
+                {
+                  content.contact.next.map((item) => (
+                    <li class="border-b border-line py-6">
+                      <p class="type-label text-signal">{item.index}</p>
+                      <h3 class="type-heading mt-2 max-w-[18ch] text-[1.125rem] md:text-[1.25rem]">
+                        {item.label}
+                      </h3>
+                      <p class="type-body mt-2 max-w-[34ch] text-[0.9375rem]">{item.body}</p>
+                    </li>
+                  ))
+                }
+              </ol>
+            </Reveal>
+
+            <Reveal delay={0.1} class="mt-8">
+              <p class="type-label text-faint">Prefer plain email</p>
+              <a
+                href={`mailto:${content.site.email}`}
+                class="link-underline font-display mt-3 inline-block text-[1.125rem] leading-tight font-medium tracking-[-0.02em] text-signal"
+              >
+                {content.site.email}
+              </a>
+              <p class="type-body mt-4 max-w-[32ch] text-[0.9375rem]">{content.site.studio}</p>
+            </Reveal>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <Footer content={content.footer} site={content.site} />
+</BaseLayout>

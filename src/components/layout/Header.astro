@@ -1,5 +1,5 @@
 ---
-import type { site as siteContent } from "@/data/content";
+import type { site as siteContent } from "@/data";
 import Button from "@/components/ui/Button.astro";
 
 interface Props {
@@ -8,6 +8,13 @@ interface Props {
 
 const { site } = Astro.props;
 const nav = site.nav;
+
+/* Active state is decided here rather than in the browser, so wayfinding
+   works without JavaScript. A section route stays current while you are on
+   any page beneath it. */
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+
 const panelLinks = [...nav, { href: site.cta.href, label: "Contact" }];
 ---
 
@@ -23,8 +30,8 @@ const panelLinks = [...nav, { href: site.cta.href, label: "Contact" }];
     {/* Wordmark — a floating element in its own right, so it stays legible
         over white, cream and the inverted sections alike. */}
     <a
-      href="#top"
-      aria-label={`${site.name}, back to top`}
+      href="/"
+      aria-label={`${site.name}, home`}
       class="relative z-10 flex items-baseline gap-2 rounded-full border border-transparent px-4 py-2.5 text-ink no-underline transition-all duration-500 group-data-[scrolled=true]:border-line group-data-[scrolled=true]:bg-white/85 group-data-[scrolled=true]:backdrop-blur-md group-data-[open=true]:text-white"
     >
       <span class="font-display text-[1.0625rem] font-semibold tracking-[-0.03em]">{site.name}</span>
@@ -33,7 +40,6 @@ const panelLinks = [...nav, { href: site.cta.href, label: "Contact" }];
 
     {/* Desktop nav — a single floating element, as compact as it can be */}
     <nav
-      data-nav
       aria-label="Primary"
       class="relative hidden items-center gap-1 rounded-full border border-line bg-white/80 p-1 backdrop-blur-md transition-shadow duration-500 group-data-[scrolled=true]:shadow-[0_8px_30px_-12px_rgba(14,15,17,0.18)] lg:flex"
     >
@@ -47,7 +53,8 @@ const panelLinks = [...nav, { href: site.cta.href, label: "Contact" }];
           <a
             data-nav-link
             href={item.href}
-            class="type-label relative rounded-full px-4 py-2.5 text-body transition-colors duration-300 hover:text-ink aria-[current=true]:text-ink"
+            aria-current={isCurrent(item.href) ? "page" : undefined}
+            class="type-label relative rounded-full px-4 py-2.5 text-body transition-colors duration-300 hover:text-ink aria-[current=page]:text-ink"
           >
             {item.label}
           </a>
@@ -83,7 +90,11 @@ const panelLinks = [...nav, { href: site.cta.href, label: "Contact" }];
       <nav aria-label="Primary, mobile" class="flex flex-col">
         {
           panelLinks.map((item, i) => (
-            <a href={item.href} class="type-statement border-b border-line-invert py-5 text-white">
+            <a
+              href={item.href}
+              aria-current={isCurrent(item.href) ? "page" : undefined}
+              class="type-statement border-b border-line-invert py-5 text-white aria-[current=page]:text-signal-invert"
+            >
               <span class="type-label mr-4 align-super text-faint-invert">0{i + 1}</span>
               {item.label}
             </a>

@@ -1,5 +1,5 @@
 ---
-import type { contact as contactContent, site as siteContent } from "@/data/content";
+import type { contact as contactContent, site as siteContent } from "@/data";
 import Button from "@/components/ui/Button.astro";
 import Reveal from "@/components/ui/Reveal.astro";
 import SectionHead from "@/components/ui/SectionHead.astro";
@@ -11,7 +11,6 @@ interface Props {
 
 const { content, site } = Astro.props;
 const mailto = `mailto:${site.email}`;
-const mailtoSubject = `${mailto}?subject=Starting%20a%20conversation%20with%20Hello%20Machine`;
 ---
 
 <section id="contact" class="scroll-mt-28 border-t border-line py-24 md:py-36">
@@ -37,7 +36,7 @@ const mailtoSubject = `${mailto}?subject=Starting%20a%20conversation%20with%20He
       </Reveal>
 
       <Reveal delay={0.2} class="mt-10 flex flex-wrap items-center gap-3">
-        <Button href={mailtoSubject} variant="ink">{site.cta.label}</Button>
+        <Button href={site.cta.href} variant="ink">{site.cta.label}</Button>
         <span class="type-label text-faint">{site.studio}</span>
       </Reveal>
     </SectionHead>

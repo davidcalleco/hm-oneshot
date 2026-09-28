@@ -11,7 +11,20 @@ import tailwindcss from "@tailwindcss/vite";
  * Webflow Cloud without changing anything here.
  */
 
-const site = process.env.SITE_URL ?? "https://hm-2026.vercel.app";
+/**
+ * Canonical identity.
+ *
+ * Defaults to the brand's own domain so canonical URLs, og:url, the sitemap
+ * and JSON-LD all agree with the contact address. Preview deployments
+ * self-reference instead, so a proposal never claims to be the production
+ * site. Vercel sets VERCEL_ENV and VERCEL_URL automatically.
+ */
+const previewUrl =
+  process.env.VERCEL_ENV && process.env.VERCEL_ENV !== "production" && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : undefined;
+
+const site = process.env.SITE_URL ?? previewUrl ?? "https://hellomachine.studio";
 
 /**
  * Unicode ranges, lifted verbatim from the subsets Google serves so the

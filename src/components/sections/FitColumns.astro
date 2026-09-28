@@ -1,0 +1,63 @@
+---
+import type { fit as fitContent } from "@/data";
+import Reveal from "@/components/ui/Reveal.astro";
+import SectionLabel from "@/components/ui/SectionLabel.astro";
+import Statement from "@/components/ui/Statement.astro";
+
+interface Props {
+  content: typeof fitContent;
+}
+
+const { content } = Astro.props;
+---
+
+<section id="fit" class="scroll-mt-28 border-t border-line py-24 md:py-36">
+  <div class="shell">
+    <div class="grid-editorial gap-y-8">
+      <div class="col-span-12 md:col-span-4">
+        <Reveal>
+          <SectionLabel index={content.index} label={content.label} />
+        </Reveal>
+      </div>
+      <div class="col-span-12 md:col-span-8">
+        <Reveal>
+          <Statement value={content.statement} class="max-w-[20ch]" />
+        </Reveal>
+      </div>
+    </div>
+
+    <div class="mt-16 grid gap-x-12 gap-y-12 border-t border-line pt-10 md:mt-20 md:grid-cols-2">
+      <Reveal>
+        <h3 class="type-label flex items-center gap-2 text-ink">
+          <span aria-hidden="true" class="size-[6px] rounded-full bg-signal"></span>
+          {content.good.heading}
+        </h3>
+        <ul class="mt-6 space-y-4">
+          {
+            content.good.items.map((item) => (
+              <li class="type-body max-w-[42ch] border-t border-line pt-4">{item}</li>
+            ))
+          }
+        </ul>
+      </Reveal>
+
+      <Reveal delay={0.08}>
+        <h3 class="type-label flex items-center gap-2 text-faint">
+          <span aria-hidden="true" class="size-[6px] rounded-full bg-line-strong"></span>
+          {content.poor.heading}
+        </h3>
+        <ul class="mt-6 space-y-4">
+          {
+            content.poor.items.map((item) => (
+              <li class="type-body max-w-[42ch] border-t border-line pt-4 text-faint">{item}</li>
+            ))
+          }
+        </ul>
+      </Reveal>
+    </div>
+
+    <Reveal class="mt-12">
+      <p class="type-label max-w-[60ch] text-faint">{content.note}</p>
+    </Reveal>
+  </div>
+</section>

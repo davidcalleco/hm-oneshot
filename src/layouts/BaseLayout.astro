@@ -1,6 +1,6 @@
 ---
 import { Font } from "astro:assets";
-import { capabilities, site as siteContent } from "@/data/content";
+import { capabilities, site as siteContent } from "@/data";
 import "@/styles/global.css";
 
 interface Props {
@@ -8,15 +8,22 @@ interface Props {
   description?: string;
   /** Long-form pages set this to keep the default title untemplated. */
   bareTitle?: boolean;
+  /** Error pages: never indexed, and no canonical to claim. */
+  noindex?: boolean;
 }
 
-const DEFAULT_DESCRIPTION =
-  "Hello Machine is a design-led technology studio. We build the systems ambitious companies run on — websites, internal tools, automation and AI, made to be used rather than demoed.";
+const DEFAULT_DESCRIPTION = siteContent.description;
+
+/* Anything that is not the production build is a proposal or a preview, and
+   must never be indexed as though it were the real site. */
+const isProduction =
+  !import.meta.env.VERCEL_ENV || import.meta.env.VERCEL_ENV === "production";
 
 const {
   title,
   description = DEFAULT_DESCRIPTION,
   bareTitle = false,
+  noindex = false,
 } = Astro.props;
 
 const pageTitle = bareTitle ? title : `${title} — ${siteContent.name}`;
@@ -47,7 +54,8 @@ const jsonLd = {
 
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {isProduction && !noindex ? null : <meta name="robots" content="noindex, nofollow" />}
+    {noindex ? null : <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />

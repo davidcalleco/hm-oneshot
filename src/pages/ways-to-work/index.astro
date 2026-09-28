@@ -1,0 +1,39 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CTABand from "@/components/ui/CTABand.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import OfferIndex from "@/components/sections/OfferIndex.astro";
+import * as content from "@/data";
+---
+
+<BaseLayout
+  title="Ways to work"
+  description="Three ways to work with Hello Machine — Intervention, Ownership and Continuous — depending on how defined the problem already is."
+>
+  <Header site={content.site} />
+  <main id="main">
+    <PageHero
+      index={content.offersPage.index}
+      label={content.offersPage.label}
+      statement={content.offersPage.statement}
+      intro={content.offersPage.intro}
+      statementClass="max-w-[18ch]"
+    />
+
+    <section class="pb-24 md:pb-32">
+      <div class="shell">
+        <OfferIndex offers={content.offers} detailed />
+
+        <Reveal class="mt-12">
+          <p class="type-label max-w-[60ch] text-faint">{content.offersPage.note}</p>
+        </Reveal>
+      </div>
+    </section>
+
+    <CTABand site={content.site} />
+  </main>
+  <Footer content={content.footer} site={content.site} />
+</BaseLayout>

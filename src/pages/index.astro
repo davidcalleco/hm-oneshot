@@ -4,23 +4,89 @@ import Header from "@/components/layout/Header.astro";
 import Footer from "@/components/layout/Footer.astro";
 import Hero from "@/components/sections/Hero.astro";
 import Studio from "@/components/sections/Studio.astro";
-import Capabilities from "@/components/sections/Capabilities.astro";
 import WorkIndex from "@/components/sections/WorkIndex.astro";
-import Approach from "@/components/sections/Approach.astro";
-import PointOfView from "@/components/sections/PointOfView.astro";
 import Contact from "@/components/sections/Contact.astro";
-import * as content from "@/data/content";
+import SituationIndex from "@/components/sections/SituationIndex.astro";
+import OfferIndex from "@/components/sections/OfferIndex.astro";
+import MakingIndex from "@/components/sections/MakingIndex.astro";
+import FitColumns from "@/components/sections/FitColumns.astro";
+import SectionHead from "@/components/ui/SectionHead.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import * as content from "@/data";
+
+const { situations: s, offers: o, making: m } = content.homeSections;
 ---
 
-<BaseLayout title="Hello Machine — Design-led technology studio" bareTitle>
+<BaseLayout title={`${content.site.name} — ${content.site.tagline}`} bareTitle>
   <Header site={content.site} />
   <main id="main">
+    {/* Preserved exactly as approved: the central proposition, the line
+        masks, the orientation strip and the capability ticker. */}
     <Hero content={content.hero} />
+
+    {/* Recognition before pitch — the first thing after the hero is a list a
+        visitor can point at and say "that is us". */}
+    <section id="situations" class="scroll-mt-28 py-24 md:py-32">
+      <div class="shell">
+        <SectionHead
+          index={s.index}
+          label={s.label}
+          statement={s.statement}
+          intro={s.intro}
+          statementClass="max-w-[16ch]"
+        />
+        <div class="mt-14 md:mt-20">
+          <SituationIndex situations={content.situations} />
+        </div>
+        <Reveal class="mt-10">
+          <a href={s.cta.href} class="type-label link-underline text-signal">{s.cta.label} →</a>
+        </Reveal>
+      </div>
+    </section>
+
+    {/* The commercial spine */}
+    <section id="ways-to-work" class="scroll-mt-28 border-t border-line bg-cream py-24 md:py-32">
+      <div class="shell">
+        <SectionHead
+          index={o.index}
+          label={o.label}
+          statement={o.statement}
+          intro={o.intro}
+          statementClass="max-w-[20ch]"
+        />
+        <div class="mt-14 md:mt-20">
+          <OfferIndex offers={content.offers} />
+        </div>
+      </div>
+    </section>
+
+    <section id="what-we-make" class="scroll-mt-28 py-24 md:py-32">
+      <div class="shell">
+        <SectionHead
+          index={m.index}
+          label={m.label}
+          statement={m.statement}
+          statementClass="max-w-[20ch]"
+        />
+        <div class="mt-14 md:mt-20">
+          <MakingIndex items={content.whatWeMake} />
+        </div>
+        <Reveal class="mt-10">
+          <a href={m.cta.href} class="type-label link-underline text-signal">
+            {m.cta.label} — and the nine capabilities behind them →
+          </a>
+        </Reveal>
+      </div>
+    </section>
+
+    {/* Positioning and the four disciplines, unchanged */}
     <Studio content={content.studio} />
-    <Capabilities content={content.capabilities} />
+
+    {/* Proof, clearly labelled as conceptual */}
     <WorkIndex content={content.work} />
-    <Approach content={content.approach} />
-    <PointOfView content={content.pointOfView} />
+
+    <FitColumns content={content.fit} />
+
     <Contact content={content.contact} site={content.site} />
   </main>
   <Footer content={content.footer} site={content.site} />

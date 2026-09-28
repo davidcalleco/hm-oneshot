@@ -1,5 +1,5 @@
 ---
-import type { footer as footerContent, site as siteContent } from "@/data/content";
+import type { footer as footerContent, site as siteContent } from "@/data";
 
 interface Props {
   content: typeof footerContent;
@@ -22,25 +22,20 @@ const year = new Date().getFullYear();
     </p>
 
     <div class="mt-14 grid gap-x-8 gap-y-10 border-t border-line pt-10 md:grid-cols-4">
-      <div>
-        <h2 class="type-label text-faint">Sections</h2>
-        <ul class="mt-4 space-y-2">
-          {
-            content.sections.map((item) => (
-              <li>
-                <a href={item.href} class="type-body link-underline text-ink">{item.label}</a>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-
-      <div>
-        <h2 class="type-label text-faint">Capabilities</h2>
-        <ul class="type-body mt-4 space-y-1 text-[0.9375rem]">
-          {content.capabilities.map((item) => <li>{item}</li>)}
-        </ul>
-      </div>
+      {
+        content.columns.map((column) => (
+          <nav aria-label={column.heading}>
+            <h2 class="type-label text-faint">{column.heading}</h2>
+            <ul class="mt-4 space-y-2">
+              {column.links.map((item) => (
+                <li>
+                  <a href={item.href} class="type-body link-underline text-ink">{item.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
 
       <div class="md:col-span-2">
         <h2 class="type-label text-faint">{site.cta.label}</h2>

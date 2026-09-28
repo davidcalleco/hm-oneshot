@@ -1,0 +1,63 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import PageHero from "@/components/ui/PageHero.astro";
+import CTABand from "@/components/ui/CTABand.astro";
+import Reveal from "@/components/ui/Reveal.astro";
+import SectionLabel from "@/components/ui/SectionLabel.astro";
+import MakingIndex from "@/components/sections/MakingIndex.astro";
+import Capabilities from "@/components/sections/Capabilities.astro";
+import WorkIndex from "@/components/sections/WorkIndex.astro";
+import * as content from "@/data";
+---
+
+<BaseLayout
+  title="What we make"
+  description="Websites, portals, internal tools, automation, knowledge systems and AI-enabled workflows — and the nine capabilities behind them."
+>
+  <Header site={content.site} />
+  <main id="main">
+    <PageHero
+      index={content.makingPage.index}
+      label={content.makingPage.label}
+      statement={content.makingPage.statement}
+      intro={content.makingPage.intro}
+      statementClass="max-w-[17ch]"
+    />
+
+    <section class="pb-24 md:pb-32">
+      <div class="shell">
+        <MakingIndex items={content.whatWeMake} />
+      </div>
+    </section>
+
+    {/* The four disciplines, carried over from the homepage's studio band */}
+    <section class="border-t border-line bg-cream py-20 md:py-28">
+      <div class="shell">
+        <Reveal>
+          <SectionLabel index="—" label="The four disciplines behind all of it" />
+        </Reveal>
+        <div class="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+          {
+            content.disciplines.fields.map((field, i) => (
+              <Reveal delay={Math.min(i * 0.05, 0.2)} class="relative border-t border-line-strong pt-6">
+                <span
+                  aria-hidden="true"
+                  class={`absolute -top-px left-0 h-px w-12 ${i === 1 || i === 2 ? "bg-signal" : "bg-ink"}`}
+                />
+                <h3 class="type-label text-ink">{field.label}</h3>
+                <p class="type-body mt-3 max-w-[30ch] text-[0.9375rem]">{field.body}</p>
+              </Reveal>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <Capabilities content={content.capabilities} />
+    <WorkIndex content={content.work} />
+    <CTABand site={content.site} />
+  </main>
+  <Footer content={content.footer} site={content.site} />
+</BaseLayout>

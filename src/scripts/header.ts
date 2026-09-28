@@ -1,27 +1,26 @@
-import { ScrollTrigger, duration, ease, gsap, registerMotion } from "@/lib/motion";
+import { duration, ease, gsap, registerMotion } from "@/lib/motion";
 
 /**
  * Site header.
  *
- * Owns three things: the condensed state on scroll, the mobile panel, and the
- * pill that tracks which section the reader is in. The pill is wayfinding, not
- * decoration — the active link also carries `aria-current` for anyone who is
- * not watching it move.
+ * Owns two things: the condensed state on scroll, and the mobile panel.
+ *
+ * The active nav item is decided on the server via `aria-current="page"`, so
+ * wayfinding survives without JavaScript. This only slides the pill to
+ * whichever link already carries it.
  *
  * Visual state is published as `data-scrolled` / `data-open` on the host and
  * styled from the markup, so this file never assembles class strings.
  */
 export class HmHeader extends HTMLElement {
-  #triggers: ScrollTrigger[] = [];
   #onScroll: (() => void) | null = null;
   #onKey: ((event: KeyboardEvent) => void) | null = null;
+  #onResize: (() => void) | null = null;
 
   connectedCallback(): void {
     registerMotion();
 
-    const nav = this.querySelector<HTMLElement>("[data-nav]");
     const indicator = this.querySelector<HTMLElement>("[data-nav-indicator]");
-    const links = [...this.querySelectorAll<HTMLAnchorElement>("[data-nav-link]")];
     const toggle = this.querySelector<HTMLButtonElement>("[data-menu-toggle]");
     const panel = this.querySelector<HTMLElement>("[data-menu-panel]");
     const cta = this.querySelector<HTMLElement>("[data-header-cta]");
@@ -63,64 +62,43 @@ export class HmHeader extends HTMLElement {
     };
     window.addEventListener("keydown", this.#onKey);
 
-    /* Section tracking */
+    /* Slide the pill to whichever link the server marked current. */
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const setActive = (index: number) => {
-      links.forEach((link, i) => {
-        if (i === index) link.setAttribute("aria-current", "true");
-        else link.removeAttribute("aria-current");
-      });
+    const placeIndicator = (animate: boolean) => {
+      if (!indicator) return;
+      const current = this.querySelector<HTMLAnchorElement>(
+        '[data-nav-link][aria-current="page"]',
+      );
 
-      if (!indicator || !nav) return;
-      const link = links[index];
-
-      if (!link) {
-        gsap.to(indicator, {
-          autoAlpha: 0,
-          duration: reduced ? 0 : duration.fast,
-          ease: ease.out,
-        });
+      if (!current || current.offsetParent === null) {
+        gsap.set(indicator, { autoAlpha: 0 });
         return;
       }
 
       gsap.to(indicator, {
-        x: link.offsetLeft,
-        width: link.offsetWidth,
+        x: current.offsetLeft,
+        width: current.offsetWidth,
         autoAlpha: 1,
-        duration: reduced ? 0 : duration.base,
+        duration: animate && !reduced ? duration.base : 0,
         ease: ease.out,
       });
     };
 
-    this.#triggers = links.map((link, i) =>
-      ScrollTrigger.create({
-        trigger: link.getAttribute("href") ?? undefined,
-        start: "top 45%",
-        end: "bottom 45%",
-        onToggle: (self) => {
-          if (self.isActive) setActive(i);
-        },
-      }),
-    );
+    placeIndicator(false);
 
-    this.#triggers.push(
-      ScrollTrigger.create({
-        trigger: "#top",
-        start: "top 45%",
-        end: "bottom 45%",
-        onToggle: (self) => {
-          if (self.isActive) setActive(-1);
-        },
-      }),
-    );
+    // The pill is positioned in pixels, so it has to be replaced on resize.
+    this.#onResize = () => placeIndicator(false);
+    window.addEventListener("resize", this.#onResize, { passive: true });
+
+    // Web fonts land after first paint and change the link widths under it.
+    document.fonts?.ready.then(() => placeIndicator(false));
   }
 
   disconnectedCallback(): void {
     if (this.#onScroll) window.removeEventListener("scroll", this.#onScroll);
     if (this.#onKey) window.removeEventListener("keydown", this.#onKey);
-    this.#triggers.forEach((trigger) => trigger.kill());
-    this.#triggers = [];
+    if (this.#onResize) window.removeEventListener("resize", this.#onResize);
     document.body.style.overflow = "";
   }
 }
