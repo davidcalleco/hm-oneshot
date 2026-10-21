@@ -31,12 +31,7 @@ export function initSmoothScroll(): void {
   });
 
   lenis.on("scroll", ScrollTrigger.update);
-
-  const raf = (time: number) => {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  };
-  requestAnimationFrame(raf);
+  driveWhileMoving(lenis);
 
   // In-page links are handled here rather than by Lenis's own `anchors`
   // option, so that the URL still updates. The distance kept from the fixed
@@ -63,4 +58,45 @@ export function initSmoothScroll(): void {
   const refresh = () => ScrollTrigger.refresh();
   document.fonts?.ready.then(refresh);
   window.addEventListener("load", refresh);
+}
+
+/**
+ * Runs Lenis's frame loop only while it is animating a scroll.
+ *
+ * A loop that never stops asks the browser for a main-thread frame on every
+ * vsync, idle or not, and each of those frames also recalculates style for
+ * whatever CSS animation is running (the header's pulse dot). Lenis needs
+ * frames only between an input — wheel, touch, a programmatic `scrollTo` —
+ * and the moment its animation settles; native scrolling is handled by its
+ * scroll listener and needs none.
+ *
+ * Lenis measures each step from the last time it was given, so after a sleep
+ * it is fed a clock that has paused too: every step stays one real frame long
+ * and the first scroll after an idle stretch does not jump to its end. The
+ * clock starts from now rather than zero, which Lenis reads as "no time yet".
+ */
+function driveWhileMoving(lenis: Lenis): void {
+  let frame = 0;
+  let clock = performance.now();
+  let last = 0;
+
+  const tick = (now: number) => {
+    clock += Math.max(0, now - last);
+    last = now;
+    lenis.raf(clock);
+    frame = lenis.isSmooth ? requestAnimationFrame(tick) : 0;
+  };
+
+  const wake = () => {
+    if (frame) return;
+    last = performance.now();
+    frame = requestAnimationFrame(tick);
+  };
+
+  lenis.on("virtual-scroll", wake);
+  const scrollTo = lenis.scrollTo.bind(lenis);
+  lenis.scrollTo = (...args) => {
+    scrollTo(...args);
+    wake();
+  };
 }
